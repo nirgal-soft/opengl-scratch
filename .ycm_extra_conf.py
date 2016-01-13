@@ -94,7 +94,9 @@ flags = [
 '-isystem',
 '/usr/include/SDL',
 '-isystem',
-'/usr/include/GL'
+'/usr/include/GL',
+'-isystem',
+'/usr/include/GLFW'
 ]
 
 
