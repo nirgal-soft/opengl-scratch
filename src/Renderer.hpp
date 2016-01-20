@@ -19,18 +19,20 @@ class Renderer
     glm::mat4 GetViewMatrix(){return view_matrix;}
     glm::mat4 GetProjectionMatrix(){return projection_matrix;}
     glm::mat4 GetMVP(){return mvp;}
-    GLFWwindow* GetWindow(){return window;}
+    sf::Window* GetWindow(){return window;}
 
     void SetViewMatrix(glm::mat4 vm){view_matrix = vm;}
     void SetProjectionMatrix(glm::mat4 pm){projection_matrix = pm;}
     void SetMVP(glm::mat4 m){mvp = m;}
-    void SetWindow(GLFWwindow* w);
+    void SetWindow(sf::Window* w);
 
   private:
     glm::mat4 view_matrix;
     glm::mat4 projection_matrix;
     glm::mat4 mvp;
-    GLFWwindow* window = nullptr;
+    sf::Window* window = nullptr;
+
+    sf::Clock clock;
 
     //Initial position on +z
     glm::vec3 position = glm::vec3(0, 0, 5);

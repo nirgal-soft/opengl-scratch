@@ -3,9 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GLFW/glfw3.h>
+//#include <GL/gl.h>
+//#include <GL/glu.h>
+#include <SFML/Window.hpp>
+#include <SFML/OpenGL.hpp>
+#include <SFML/System.hpp>
 #include "../glm/glm.hpp"
 #include "../glm/gtc/matrix_transform.hpp"
 #include <string>

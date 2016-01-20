@@ -1,22 +1,31 @@
 #include "Renderer.hpp"
-#include <random>
-
 Renderer* renderer = nullptr;
 
 int main(int argc, char** argv)
 {
-
+  //Initialize renderer
   renderer = new Renderer();
   renderer->Initialize();
 
-  //Ensure we can capture the escape key being pressed
-  do
+  //run the main loop
+  bool running = true;
+  while(running)
   {
+    //handle events
+    sf::Event event;
+    while(renderer->GetWindow()->pollEvent(event))
+    {
+      if(event.type == sf::Event::Closed)
+        running = false;
+      else if(event.type == sf::Event::Resized)
+        glViewport(0, 0, event.size.width, event.size.height);
+    }
+
     renderer->Render();
-    glfwPollEvents();
   }
-  while(GLFW_PRESS != glfwGetKey(renderer->GetWindow(), GLFW_KEY_ESCAPE) && 
-      0 == glfwWindowShouldClose(renderer->GetWindow()));
+
+  delete renderer;
+  renderer = nullptr;
 
   return 0;
 }

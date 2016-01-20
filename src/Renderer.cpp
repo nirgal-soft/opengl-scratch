@@ -12,52 +12,30 @@ Renderer::~Renderer()
 
 }
 
-void Renderer::SetWindow(GLFWwindow* window_in)
+void Renderer::SetWindow(sf::Window* window_in)
 {
   window = window_in;
 }
 
 bool Renderer::Initialize()
 {
-  if(!glfwInit())
-  {
-    fprintf(stderr, "Failed to initialized GLFW\n");
-    return false;
-  }
-
-  //4x anti-aliasing
-  glfwWindowHint(GLFW_SAMPLES, 4);
+  sf::ContextSettings settings;
+  settings.depthBits = 24;
+  settings.stencilBits = 8;
+  settings.antialiasingLevel = 4;
+  settings.majorVersion = 3;
+  settings.minorVersion = 3;
+  
+  //create the window
+  window = new sf::Window(sf::VideoMode(1280, 720), "Modern OpenGL with SFML",
+      sf::Style::Default, settings);
+  window->setVerticalSyncEnabled(true);
   PrintError(__LINE__, __FILE__);
-  //OpenGL version
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  PrintError(__LINE__, __FILE__);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  PrintError(__LINE__, __FILE__);
-  //OpenGL core profile
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  PrintError(__LINE__, __FILE__);
-
-  //Open a window and Create its OpenGL context
-  window = glfwCreateWindow(1280, 720, "Modern OpenGL", NULL, NULL);
-  PrintError(__LINE__, __FILE__);
-  if(NULL == window)
-  {
-    fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, 3.3 not available\n");
-    glfwTerminate();
-    PrintError(__LINE__, __FILE__);
-    return false;
-  }
-
-  glfwMakeContextCurrent(window);
-  PrintError(__LINE__, __FILE__);
-  //Experimental needed for core profile
+ 
   glewExperimental = true;
-  //Initialze GLEW
+  PrintError(__LINE__, __FILE__);
   if(GLEW_OK != glewInit())
-  {
-    fprintf(stderr, "Failed to initialize GLEW\n");
-    return false;
-  }
+    printf("Could not initialize GLEW\n");
   PrintError(__LINE__, __FILE__);
 
   //Enable depth test
@@ -72,20 +50,16 @@ bool Renderer::Initialize()
   glEnable(GL_CULL_FACE);
   PrintError(__LINE__, __FILE__);
 
-  //handle input initialization
-  glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-  glfwPollEvents();
-
-
   printf("OpenGL Version: %s\n", glGetString(GL_VERSION));
   PrintError(__LINE__, __FILE__);
   printf("OpenGL shader language version: %s\n", 
     glGetString(GL_SHADING_LANGUAGE_VERSION));
   PrintError(__LINE__, __FILE__);
- 
-  program_id = LoadShaders("../shaders/SimpleVertexShader.vs", 
-      "../shaders/SimpleFragmentShader.fs");
+
+  std::string vert_shader_path = "/home/rearden/Documents/projects/modern_opengl/shaders/SimpleVertexShader.vs";
+  std::string frag_shader_path = "/home/rearden/Documents/projects/modern_opengl/shaders/SimpleFragmentShader.fs";
+  program_id = LoadShaders(vert_shader_path.c_str(), 
+      frag_shader_path.c_str());;
 
   cube = new Cube();
   cube->Init();
@@ -101,7 +75,7 @@ bool Renderer::Initialize()
   matrix_id = glGetUniformLocation(program_id, "mvp");
   PrintError(__LINE__, __FILE__);
 
-  //glfwSetCursorPos(window, 1280/2, 720/2);
+  sf::Mouse::setPosition(sf::Vector2i(1280/2, 720/2), *window);
   
   return true;
 }
@@ -135,31 +109,27 @@ void Renderer::Render()
 
   cube->Render();
 
-  glfwSwapBuffers(window);
+  window->display();
   first_iteration = false;
-
 }
 
 //Compute the matrices from given input
 void Renderer::ComputeMatricesFromInputs()
 {
-  //glfwGetTime is called only once the first time this function is called
-  static double last_time = glfwGetTime();
+  //GetTime is called only once the first time this function is called
+  static sf::Time last_time = clock.getElapsedTime();
 
   //Compute time difference between current and last frame
-  double current_time = glfwGetTime();
-  float delta_time = float(current_time - last_time);
+  sf::Time current_time = clock.getElapsedTime();
+  float delta_time = sf::Time(current_time - last_time).asSeconds();
 
-  //Get mouse position
-  double mouse_x, mouse_y;
-  glfwGetCursorPos(window, &mouse_x, &mouse_y);
-
-  //Reset mouse position for next frame
-  //glfwSetCursorPos(window, 1280/2, 720/2);
+  //get mouse position
+  sf::Vector2i cursor_pos = sf::Mouse::getPosition(*window);
+  sf::Mouse::setPosition(sf::Vector2i(1280/2, 720/2), *window);
 
   //compute new orientation
-  horizontal_angle += mouse_speed * float(1280/2 - mouse_x);
-  vertical_angle += mouse_speed * float(720/2 - mouse_y);
+  horizontal_angle += mouse_speed * float(1280/2 - cursor_pos.x);
+  vertical_angle += mouse_speed * float(720/2 - cursor_pos.y);
 
   //Direction
   glm::vec3 direction(
@@ -176,19 +146,19 @@ void Renderer::ComputeMatricesFromInputs()
   glm::vec3 up = glm::cross(right, direction);
 
   //Move forward
-  if(GLFW_PRESS == glfwGetKey(window, GLFW_KEY_W))
+  if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     position += direction * delta_time * speed;
 
   //Move backward
-  if(GLFW_PRESS == glfwGetKey(window, GLFW_KEY_S))
+  if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     position -= direction * delta_time * speed;
 
   //Strafe right
-  if(GLFW_PRESS == glfwGetKey(window, GLFW_KEY_D))
+  if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     position += right * delta_time * speed;
 
   //Strafe left
-  if(GLFW_PRESS == glfwGetKey(window, GLFW_KEY_A))
+  if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     position -= right * delta_time * speed;
 
   float fov = initial_fov;
@@ -198,7 +168,7 @@ void Renderer::ComputeMatricesFromInputs()
   //Camera matrix
   view_matrix = glm::lookAt(position, position + direction, up);
 
-  //For next frame, the last time will be now
+  //set last time to current time
   last_time = current_time;
 }
 
