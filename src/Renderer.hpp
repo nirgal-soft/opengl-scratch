@@ -44,12 +44,15 @@ class Renderer
     float initial_fov = 45.0f;
 
     float speed = 3.0f;
-    float mouse_speed = 0.00005f;
+    float mouse_speed = 0.005f;
 
     //Shader program
     GLuint program_id = 0;
     GLuint vertex_array_id = 0;
-    GLuint matrix_id = 0;
+    GLuint mvp_id = 0;
+    GLuint view_matrix_id = 0;
+    GLuint model_matrix_id = 0;
+    GLuint light_id = 0;
 
     //Cube for testing
     Cube* cube = nullptr;

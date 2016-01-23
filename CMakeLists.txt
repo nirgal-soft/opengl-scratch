@@ -25,10 +25,7 @@ add_definitions(${OpenGL_DEFINITIONS})
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 
-find_package(GLFW REQUIRED glfw3)
-include_directories(${GLFW_INCLUDE_DIRS})
-
 find_package(SFML 2 REQUIRED system window graphics network audio)
 include_directories(${SFML_INCLUDE_DIR})
 
-target_link_libraries(${EXECUTABLE_NAME} ${GLFW_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${SFML_LIBRARIES})
+target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${SFML_LIBRARIES})

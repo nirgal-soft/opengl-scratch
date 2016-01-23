@@ -8,17 +8,22 @@ int main(int argc, char** argv)
   renderer->Initialize();
 
   //run the main loop
-  bool running = true;
-  while(running)
+  while(renderer->GetWindow()->isOpen())
   {
     //handle events
     sf::Event event;
     while(renderer->GetWindow()->pollEvent(event))
     {
-      if(event.type == sf::Event::Closed)
-        running = false;
-      else if(event.type == sf::Event::Resized)
-        glViewport(0, 0, event.size.width, event.size.height);
+      switch(event.type)
+      {
+        case sf::Event::Closed:
+          renderer->GetWindow()->close();
+          break;
+        case sf::Event::KeyPressed:
+          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+            renderer->GetWindow()->close();
+          break;
+      }
     }
 
     renderer->Render();

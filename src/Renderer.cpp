@@ -4,7 +4,7 @@
 
 Renderer::Renderer()
 {
-
+  
 }
 
 Renderer::~Renderer()
@@ -72,7 +72,13 @@ bool Renderer::Initialize()
   glBindVertexArray(vertex_array_id);
   PrintError(__LINE__, __FILE__);
 
-  matrix_id = glGetUniformLocation(program_id, "mvp");
+  mvp_id = glGetUniformLocation(program_id, "mvp");
+  PrintError(__LINE__, __FILE__);
+  view_matrix_id = glGetUniformLocation(program_id, "view_matrix");
+  PrintError(__LINE__, __FILE__);
+  model_matrix_id = glGetUniformLocation(program_id, "model_matrix");
+  PrintError(__LINE__, __FILE__);
+  light_id = glGetUniformLocation(program_id, "light_position");
   PrintError(__LINE__, __FILE__);
 
   sf::Mouse::setPosition(sf::Vector2i(1280/2, 720/2), *window);
@@ -103,7 +109,18 @@ void Renderer::Render()
   mvp = proj * view * model;
 
   //send our transformation to the shader pair
-  glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
+  glUniformMatrix4fv(mvp_id, 1, GL_FALSE, &mvp[0][0]);
+  if(first_iteration)
+    PrintError(__LINE__, __FILE__);
+  glUniformMatrix4fv(model_matrix_id, 1, GL_FALSE, &model[0][0]);
+  if(first_iteration)
+    PrintError(__LINE__, __FILE__);
+  glUniformMatrix4fv(view_matrix_id, 1, GL_FALSE, &view[0][0]);
+  if(first_iteration)
+    PrintError(__LINE__, __FILE__);
+
+  glm::vec3 light_position = glm::vec3(mvp[3]);
+  glUniform3f(light_id, light_position.x, light_position.y, light_position.z);
   if(first_iteration)
     PrintError(__LINE__, __FILE__);
 

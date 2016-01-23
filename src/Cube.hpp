@@ -22,10 +22,13 @@ class Cube
     GLuint vertex_buffer = 0;
     GLuint color_buffer = 0;
     GLuint uv_data = 0;
+    GLuint normal_data = 0;
+    GLuint index_buffer = 0;
 
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec2> uvs;
     std::vector<glm::vec3> normals;
+    std::vector<unsigned short> indices;
 
     Texture* texture = nullptr;
     GLuint texture_location = 0;
