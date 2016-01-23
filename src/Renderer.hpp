@@ -19,18 +19,18 @@ class Renderer
     glm::mat4 GetViewMatrix(){return view_matrix;}
     glm::mat4 GetProjectionMatrix(){return projection_matrix;}
     glm::mat4 GetMVP(){return mvp;}
-    sf::Window* GetWindow(){return window;}
+    sf::RenderWindow* GetWindow(){return window;}
 
     void SetViewMatrix(glm::mat4 vm){view_matrix = vm;}
     void SetProjectionMatrix(glm::mat4 pm){projection_matrix = pm;}
     void SetMVP(glm::mat4 m){mvp = m;}
-    void SetWindow(sf::Window* w);
+    void SetWindow(sf::RenderWindow* w);
 
   private:
     glm::mat4 view_matrix;
     glm::mat4 projection_matrix;
     glm::mat4 mvp;
-    sf::Window* window = nullptr;
+    sf::RenderWindow* window = nullptr;
 
     sf::Clock clock;
 

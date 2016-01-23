@@ -9,7 +9,7 @@ endif()
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_bINARY_DIR}/lib")
 
-file(GLOB SOURCES src/*.cpp)
+file(GLOB SOURCES src/*.cpp imgui/*.cpp)
 
 set(EXECUTABLE_NAME "modern_opengl")
 add_executable(${EXECUTABLE_NAME} ${SOURCES})

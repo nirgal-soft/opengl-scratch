@@ -9,10 +9,10 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
-
+  ImGui::SFML::Shutdown();
 }
 
-void Renderer::SetWindow(sf::Window* window_in)
+void Renderer::SetWindow(sf::RenderWindow* window_in)
 {
   window = window_in;
 }
@@ -27,7 +27,7 @@ bool Renderer::Initialize()
   settings.minorVersion = 3;
   
   //create the window
-  window = new sf::Window(sf::VideoMode(1280, 720), "Modern OpenGL with SFML",
+  window = new sf::RenderWindow(sf::VideoMode(1280, 720), "Modern OpenGL with SFML",
       sf::Style::Default, settings);
   window->setVerticalSyncEnabled(true);
   PrintError(__LINE__, __FILE__);
@@ -37,6 +37,10 @@ bool Renderer::Initialize()
   if(GLEW_OK != glewInit())
     printf("Could not initialize GLEW\n");
   PrintError(__LINE__, __FILE__);
+  if(GLEW_SGIS_texture_edge_clamp)
+    printf("You have the texture edge clamp extension\n");
+  else
+    printf("You do not have the texture edge clamp extension\n");
 
   //Enable depth test
   glEnable(GL_DEPTH_TEST);
@@ -82,7 +86,12 @@ bool Renderer::Initialize()
   PrintError(__LINE__, __FILE__);
 
   sf::Mouse::setPosition(sf::Vector2i(1280/2, 720/2), *window);
-  
+ 
+  ImGui::SFML::SetRenderTarget(*window);
+  ImGui::SFML::InitImGuiRendering();
+  ImGui::SFML::SetWindow(*window);
+  ImGui::SFML::InitImGuiEvents();
+ 
   return true;
 }
 
@@ -93,6 +102,9 @@ void Renderer::Update(float delta_time)
 
 void Renderer::Render()
 {
+  ImGui::SFML::UpdateImGui();
+  ImGui::SFML::UpdateImGuiRendering();
+  
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   if(first_iteration)
     PrintError(__LINE__, __FILE__);
@@ -125,6 +137,17 @@ void Renderer::Render()
     PrintError(__LINE__, __FILE__);
 
   cube->Render();
+ 
+  glUseProgram(0);
+
+  ImGuiIO& io = ImGui::GetIO();
+  bool tmp = true;
+  ImGui::Begin("Window", &tmp);
+  ImGui::Text("Hello world");
+  ImGui::Button("Does this work?");
+  ImGui::End();
+
+  ImGui::Render();
 
   window->display();
   first_iteration = false;

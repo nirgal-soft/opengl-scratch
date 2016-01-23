@@ -27,6 +27,7 @@ int main(int argc, char** argv)
     }
 
     renderer->Render();
+
   }
 
   delete renderer;
