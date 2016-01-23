@@ -1,6 +1,11 @@
 #include "Renderer.hpp"
 #include "Shader.hpp"
 #include "Cube.hpp"
+#define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
+
+bool show_test_window = true;
+bool show_another_window = false;
+ImVec4 clear_color = ImColor(114, 144, 154);
 
 Renderer::Renderer()
 {
@@ -60,8 +65,8 @@ bool Renderer::Initialize()
     glGetString(GL_SHADING_LANGUAGE_VERSION));
   PrintError(__LINE__, __FILE__);
 
-  std::string vert_shader_path = "/home/rearden/Documents/projects/modern_opengl/shaders/SimpleVertexShader.vs";
-  std::string frag_shader_path = "/home/rearden/Documents/projects/modern_opengl/shaders/SimpleFragmentShader.fs";
+  std::string vert_shader_path = "C:/Users/murra/Documents/projects/modern_opengl/shaders/SimpleVertexShader.vs";
+  std::string frag_shader_path = "C:/Users/murra/Documents/projects/modern_opengl/shaders/SimpleFragmentShader.fs";
   program_id = LoadShaders(vert_shader_path.c_str(), 
       frag_shader_path.c_str());;
 
@@ -91,7 +96,9 @@ bool Renderer::Initialize()
   ImGui::SFML::InitImGuiRendering();
   ImGui::SFML::SetWindow(*window);
   ImGui::SFML::InitImGuiEvents();
- 
+
+  ComputeMatricesFromInputs();
+
   return true;
 }
 
@@ -114,7 +121,7 @@ void Renderer::Render()
   if(first_iteration)
     PrintError(__LINE__, __FILE__);
 
-  ComputeMatricesFromInputs();
+  //ComputeMatricesFromInputs();
   glm::mat4 proj = projection_matrix;
   glm::mat4 view = view_matrix;
   glm::mat4 model = *cube->GetModelMatrix();
@@ -137,19 +144,16 @@ void Renderer::Render()
     PrintError(__LINE__, __FILE__);
 
   cube->Render();
- 
-  glUseProgram(0);
 
-  ImGuiIO& io = ImGui::GetIO();
-  bool tmp = true;
-  ImGui::Begin("Window", &tmp);
-  ImGui::Text("Hello world");
-  ImGui::Button("Does this work?");
-  ImGui::End();
+  window->pushGLStates();
+
+  glUseProgram(0);
 
   ImGui::Render();
 
+  window->popGLStates();
   window->display();
+
   first_iteration = false;
 }
 

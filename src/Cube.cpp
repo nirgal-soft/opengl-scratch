@@ -12,7 +12,7 @@ void Cube::Init()
   std::vector<glm::vec3> temp_normals;
 
   //Load object
-  std::string obj_path = "/home/rearden/Documents/projects/modern_opengl/assets/cube.obj";
+  std::string obj_path = "C:/Users/murra/Documents/projects/modern_opengl/assets/cube.obj";
   if(!LoadObj(obj_path.c_str(), temp_verts, temp_uvs, temp_normals)) 
     printf("Could not load cube.obj\n");
 
@@ -53,7 +53,7 @@ void Cube::Init()
 
   //Set up texture
   texture = new Texture();
-  texture->LoadBMP("/home/rearden/Documents/projects/modern_opengl/assets/uvtemplate.bmp");
+  texture->LoadBMP("C:/Users/murra/Documents/projects/modern_opengl/assets/uvtemplate.bmp");
 }
 
 void Cube::Update()
@@ -126,6 +126,18 @@ void Cube::Render()
   glDisableVertexAttribArray(2);
   if(first_iteration)
     PrintError(__LINE__, __FILE__);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  if (first_iteration)
+	  PrintError(__LINE__, __FILE__);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  if (first_iteration)
+	  PrintError(__LINE__, __FILE__);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  if (first_iteration)
+	  PrintError(__LINE__, __FILE__);
+  glUseProgram(0);
+  if (first_iteration)
+	  PrintError(__LINE__, __FILE__);
 
   first_iteration = false;
 }
