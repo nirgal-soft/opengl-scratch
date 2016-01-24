@@ -1,5 +1,6 @@
 #pragma once
 #include "util.h"
+#include <vector>
 
 void IndexVBO(
     std::vector<glm::vec3>& in_vertices,

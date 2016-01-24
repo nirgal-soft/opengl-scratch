@@ -49,9 +49,3 @@ namespace ImGui
 }
 */
 
-#define IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT struct ImDrawVert\
-{\
-    ImVec2  pos;\
-    ImU32   col;\
-    ImVec2  uv;\
-};

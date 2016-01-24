@@ -2,17 +2,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <GL/glew.h>
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-//
 #include "../imgui/imgui.h"
-#include "../imgui/imgui-events-SFML.h"
-#include "../imgui/imgui-rendering-SFML.h"
-#include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Graphics.hpp>
+#include "../imgui/imgui_impl_sdl_gl3.h"
+#include <GL/gl3w.h>
+#include <GL/glu.h>
+#include <SDL.h>
 #include "../glm/glm.hpp"
 #include "../glm/gtc/matrix_transform.hpp"
 #include <string>

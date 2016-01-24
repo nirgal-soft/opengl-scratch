@@ -9,7 +9,7 @@ endif()
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_bINARY_DIR}/lib")
 
-file(GLOB SOURCES src/*.cpp imgui/*.cpp)
+file(GLOB SOURCES src/*.cpp imgui/*.cpp libs/gl3w/GL/gl3w.c)
 
 set(EXECUTABLE_NAME "modern_opengl")
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
@@ -25,7 +25,9 @@ add_definitions(${OpenGL_DEFINITIONS})
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 
-find_package(SFML 2 REQUIRED system window graphics network audio)
-include_directories(${SFML_INCLUDE_DIR})
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIR})
 
-target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${SFML_LIBRARIES})
+include_directories(libs/gl3w)
+
+target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${SDL2_LIBRARY} ${CMAKE_DL_LIBS})

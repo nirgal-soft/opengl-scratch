@@ -7,29 +7,27 @@ int main(int argc, char** argv)
   renderer = new Renderer();
   renderer->Initialize();
 
+  SDL_Event event;
+  SDL_StartTextInput();
+  bool quit = false;
+
+  while(!quit)
   //run the main loop
-  while(renderer->GetWindow()->isOpen())
   {
-    //handle events
-    sf::Event event;
-    while(renderer->GetWindow()->pollEvent(event))
+    while(SDL_PollEvent(&event) != 0)
     {
-      switch(event.type)
+      ImGui_ImplSdlGL3_ProcessEvent(&event);
+      if(event.type == SDL_QUIT)
+        quit = true;
+      else if(event.type == SDL_TEXTINPUT)
       {
-        case sf::Event::Closed:
-          renderer->GetWindow()->close();
-          break;
-        case sf::Event::KeyPressed:
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-            renderer->GetWindow()->close();
-          break;
+
       }
     }
-
     renderer->Render();
-
   }
-
+  
+  SDL_StopTextInput();
   delete renderer;
   renderer = nullptr;
 
