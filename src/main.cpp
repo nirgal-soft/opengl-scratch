@@ -24,6 +24,7 @@ int main(int argc, char** argv)
 
       }
     }
+		renderer->Update(0.0f);
     renderer->Render();
   }
   

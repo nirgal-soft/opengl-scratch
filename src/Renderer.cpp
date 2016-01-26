@@ -119,21 +119,104 @@ bool Renderer::Initialize()
   ComputeMatricesFromInputs();
 
   ImGui_ImplSdlGL3_Init(window);
+
+	//Set up render texture
+	glGenFramebuffers(1, &frame_buffer_name);
+	PrintError(__LINE__, __FILE__);
+	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_name);
+	PrintError(__LINE__, __FILE__);
+
+	glGenTextures(1, &render_texture);
+	PrintError(__LINE__, __FILE__);
+	glBindTexture(GL_TEXTURE_2D, render_texture);
+	PrintError(__LINE__, __FILE__);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 
+		0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	PrintError(__LINE__, __FILE__);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glGenRenderbuffers(1, &depth_render_buffer);
+	PrintError(__LINE__, __FILE__);
+	glBindRenderbuffer(GL_RENDERBUFFER, depth_render_buffer);
+	PrintError(__LINE__, __FILE__);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	PrintError(__LINE__, __FILE__);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+		GL_RENDERBUFFER, depth_render_buffer);
+	PrintError(__LINE__, __FILE__);
+
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+		render_texture, 0);
+	PrintError(__LINE__, __FILE__);
+	draw_buffers[0] = GL_COLOR_ATTACHMENT0;
+	glDrawBuffers(1, draw_buffers);
+	PrintError(__LINE__, __FILE__);
+
+	std::string rtt_shader_path = "C:/users/murra/Documents/projects/modern_opengl/shaders/SimpleTextureShader.fs";
+	render_to_texture_program_id = LoadShaders(vert_shader_path.c_str(), rtt_shader_path.c_str());
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		return false;
   
   return success;
 }
 
 void Renderer::Update(float delta_time)
 {
-
+	cube->Update();
 }
 
 void Renderer::Render()
 {
+	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//Render to texture
+	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_name);
+	glViewport(0, 0, width, height);
+
+	glClearColor(0.7f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if (first_iteration)
 		PrintError(__LINE__, __FILE__);
 
+	RenderToTexture();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	ImGui_ImplSdlGL3_NewFrame();
+
+	ImGui::BeginMainMenuBar();
+	if (ImGui::BeginMenu("File"))
+	{
+		ImGui::MenuItem("New");
+		ImGui::MenuItem("Open");
+		ImGui::EndMenu();
+	}
+	ImGui::EndMainMenuBar();
+
+	ImGui::SetNextWindowSize({ (float)width, (float)height / 4.0f });
+	ImGui::SetNextWindowPos({ 0.0f, (float)height - ((float)height / 4.0f) });
+	ImGui::Begin("Assets", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+	ImGui::ImageButton((ImTextureID*)cube->GetTexture()->GetTextureID(), { 32,32 });
+	ImGui::Text("test_image.png");
+	ImGui::End();
+	
+	//ImGui::SetNextWindowSize({ (float)width / 2, (float)height / 2 });
+	ImGui::Begin("Render View", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+	ImGui::Image((ImTextureID*)render_texture, { (float)width/2, (float)height/2 });
+	ImGui::End();
+  
+  ImGui::Render();
+
+  SDL_GL_SwapWindow(window);
+  
+  first_iteration = false;
+}
+
+void Renderer::RenderToTexture()
+{
 	//select shader pair to use
 	glUseProgram(program_id);
 	if (first_iteration)
@@ -162,31 +245,6 @@ void Renderer::Render()
 		PrintError(__LINE__, __FILE__);
 
 	cube->Render();
-
-	ImGui_ImplSdlGL3_NewFrame();
-
-	ImGui::BeginMainMenuBar();
-	if (ImGui::BeginMenu("File"))
-	{
-		ImGui::MenuItem("New");
-		ImGui::MenuItem("Open");
-		ImGui::EndMenu();
-	}
-	ImGui::EndMainMenuBar();
-
-	ImGui::SetNextWindowSize({ (float)width, (float)height / 4.0f });
-	ImGui::SetNextWindowPos({ 0.0f, (float)height - ((float)height / 4.0f) });
-	ImGui::Begin("Assets", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-	ImGui::ImageButton((ImTextureID*)cube->GetTexture()->GetTextureID(), { 32,32 });
-	ImGui::Text("test_image.png");
-	ImGui::Button("button");
-	ImGui::End();
-  
-  ImGui::Render();
-
-  SDL_GL_SwapWindow(window);
-  
-  first_iteration = false;
 }
 
 //Compute the matrices from given input

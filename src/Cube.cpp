@@ -58,7 +58,7 @@ void Cube::Init()
 
 void Cube::Update()
 {
-
+	model_matrix = glm::rotate(model_matrix, 0.1f, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void Cube::Render()

@@ -8,7 +8,7 @@ in vec3 eye_direction_camera_space;
 in vec3 light_direction_camera_space;
 
 //output data
-out vec3 color;
+layout(location = 0) out vec3 color;
 
 //values that stay constant
 uniform sampler2D texture_sampler;

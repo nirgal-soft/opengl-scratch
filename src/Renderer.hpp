@@ -12,6 +12,7 @@ class Renderer
     bool Initialize();
     void Update(float delta_time);
     void Render();
+		void RenderToTexture();
     void CleanUp();
 
     void ComputeMatricesFromInputs();
@@ -60,6 +61,14 @@ class Renderer
     GLuint view_matrix_id = 0;
     GLuint model_matrix_id = 0;
     GLuint light_id = 0;
+
+		//Render to texture
+		GLuint frame_buffer_name = 0;
+		GLuint render_texture = 0;
+		GLuint depth_render_buffer = 0;
+		GLenum draw_buffers[1];
+		GLuint render_to_texture_program_id = 0;
+		GLuint rtt_texture_id = 0;
 
     //Cube for testing
     Cube* cube = nullptr;
