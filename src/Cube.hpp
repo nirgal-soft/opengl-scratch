@@ -15,6 +15,7 @@ class Cube
 
     glm::mat4* GetModelMatrix(){return &model_matrix;}
     GLuint& GetTextureLocation(){return texture_location;}
+	Texture* GetTexture() { return texture; }
 
   private:
     glm::mat4 model_matrix = glm::mat4(1.0f);

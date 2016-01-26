@@ -1,6 +1,7 @@
 #include "Renderer.hpp"
 #include "Shader.hpp"
 #include "Cube.hpp"
+#include "Texture.hpp"
 
 bool show_test_window = true;
 bool show_another_window = false;
@@ -30,7 +31,7 @@ bool Renderer::Initialize()
   /* settings.minorVersion = 3; */
   
   /* //create the window */
-  /* window = new sf::RenderWindow(sf::VideoMode(1280, 720), "Modern OpenGL with SFML", */
+  /* window = new sf::RenderWindow(sf::VideoMode(width, height), "Modern OpenGL with SFML", */
   /*     sf::Style::Default, settings); */
   /* window->setVerticalSyncEnabled(true); */
   /* PrintError(__LINE__, __FILE__); */
@@ -48,7 +49,7 @@ bool Renderer::Initialize()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     window = SDL_CreateWindow("Modern OpenGL", SDL_WINDOWPOS_UNDEFINED, 
-        SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+        SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if(NULL == window)
     {
       printf("Window could not be created. SDL Error: %s\n", SDL_GetError());
@@ -88,8 +89,8 @@ bool Renderer::Initialize()
     glGetString(GL_SHADING_LANGUAGE_VERSION));
   PrintError(__LINE__, __FILE__);
 
-  std::string vert_shader_path = "/home/rearden/Documents/projects/modern_opengl/shaders/SimpleVertexShader.vs";
-  std::string frag_shader_path = "/home/rearden/Documents/projects/modern_opengl/shaders/SimpleFragmentShader.fs";
+  std::string vert_shader_path = "C:/users/murra/Documents/projects/modern_opengl/shaders/SimpleVertexShader.vs";
+  std::string frag_shader_path = "C:/users/murra/Documents/projects/modern_opengl/shaders/SimpleFragmentShader.fs";
   program_id = LoadShaders(vert_shader_path.c_str(), 
       frag_shader_path.c_str());;
 
@@ -113,7 +114,7 @@ bool Renderer::Initialize()
   light_id = glGetUniformLocation(program_id, "light_position");
   PrintError(__LINE__, __FILE__);
 
-  /* sf::Mouse::setPosition(sf::Vector2i(1280/2, 720/2), *window); */
+  /* sf::Mouse::setPosition(sf::Vector2i(width/2, height/2), *window); */
  
   ComputeMatricesFromInputs();
 
@@ -129,71 +130,58 @@ void Renderer::Update(float delta_time)
 
 void Renderer::Render()
 {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  if(first_iteration)
-    PrintError(__LINE__, __FILE__);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (first_iteration)
+		PrintError(__LINE__, __FILE__);
 
-  //select shader pair to use
-  glUseProgram(program_id);
-  if(first_iteration)
-    PrintError(__LINE__, __FILE__);
+	//select shader pair to use
+	glUseProgram(program_id);
+	if (first_iteration)
+		PrintError(__LINE__, __FILE__);
 
-  //ComputeMatricesFromInputs();
-  glm::mat4 proj = projection_matrix;
-  glm::mat4 view = view_matrix;
-  glm::mat4 model = *cube->GetModelMatrix();
-  mvp = proj * view * model;
+	//ComputeMatricesFromInputs();
+	glm::mat4 proj = projection_matrix;
+	glm::mat4 view = view_matrix;
+	glm::mat4 model = *cube->GetModelMatrix();
+	mvp = proj * view * model;
 
-  //send our transformation to the shader pair
-  glUniformMatrix4fv(mvp_id, 1, GL_FALSE, &mvp[0][0]);
-  if(first_iteration)
-    PrintError(__LINE__, __FILE__);
-  glUniformMatrix4fv(model_matrix_id, 1, GL_FALSE, &model[0][0]);
-  if(first_iteration)
-    PrintError(__LINE__, __FILE__);
-  glUniformMatrix4fv(view_matrix_id, 1, GL_FALSE, &view[0][0]);
-  if(first_iteration)
-    PrintError(__LINE__, __FILE__);
+	//send our transformation to the shader pair
+	glUniformMatrix4fv(mvp_id, 1, GL_FALSE, &mvp[0][0]);
+	if (first_iteration)
+		PrintError(__LINE__, __FILE__);
+	glUniformMatrix4fv(model_matrix_id, 1, GL_FALSE, &model[0][0]);
+	if (first_iteration)
+		PrintError(__LINE__, __FILE__);
+	glUniformMatrix4fv(view_matrix_id, 1, GL_FALSE, &view[0][0]);
+	if (first_iteration)
+		PrintError(__LINE__, __FILE__);
 
-  glm::vec3 light_position = glm::vec3(mvp[3]);
-  glUniform3f(light_id, light_position.x, light_position.y, light_position.z);
-  if(first_iteration)
-    PrintError(__LINE__, __FILE__);
+	glm::vec3 light_position = glm::vec3(mvp[3]);
+	glUniform3f(light_id, light_position.x, light_position.y, light_position.z);
+	if (first_iteration)
+		PrintError(__LINE__, __FILE__);
 
-  cube->Render();
+	cube->Render();
+
+	ImGui_ImplSdlGL3_NewFrame();
+
+	ImGui::BeginMainMenuBar();
+	if (ImGui::BeginMenu("File"))
+	{
+		ImGui::MenuItem("New");
+		ImGui::MenuItem("Open");
+		ImGui::EndMenu();
+	}
+	ImGui::EndMainMenuBar();
+
+	ImGui::SetNextWindowSize({ (float)width, (float)height / 4.0f });
+	ImGui::SetNextWindowPos({ 0.0f, (float)height - ((float)height / 4.0f) });
+	ImGui::Begin("Assets", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+	ImGui::ImageButton((ImTextureID*)cube->GetTexture()->GetTextureID(), { 32,32 });
+	ImGui::Text("test_image.png");
+	ImGui::Button("button");
+	ImGui::End();
   
-  ImGui_ImplSdlGL3_NewFrame();
-
-  //Simple window
-  {
-    static float f = 0.0f;
-    ImGui::Text("Hello world");
-    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-    ImGui::ColorEdit3("clear color", (float*)&clear_color);
-    if(ImGui::Button("Test Window"))
-      show_test_window ^= 1;
-    if(ImGui::Button("Another Window"))
-      show_another_window ^= 1;
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-        1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-  }
-
-  //Show another simple window
-  if(show_another_window)
-  {
-    ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
-    ImGui::Begin("Another window", &show_another_window);
-    ImGui::Text("Hello");
-    ImGui::End();
-  }
-
-  //Show the imgui test window
-  if(show_test_window)
-  {
-    ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-    ImGui::ShowTestWindow(&show_test_window);
-  }
-
   ImGui::Render();
 
   SDL_GL_SwapWindow(window);
@@ -213,11 +201,11 @@ void Renderer::ComputeMatricesFromInputs()
 
   /* //get mouse position */
   /* sf::Vector2i cursor_pos = sf::Mouse::getPosition(*window); */
-  /* sf::Mouse::setPosition(sf::Vector2i(1280/2, 720/2), *window); */
+  /* sf::Mouse::setPosition(sf::Vector2i(width/2, height/2), *window); */
 
   //compute new orientation
-  /* horizontal_angle += mouse_speed * float(1280/2 - cursor_pos.x); */
-  /* vertical_angle += mouse_speed * float(720/2 - cursor_pos.y); */
+  /* horizontal_angle += mouse_speed * float(width/2 - cursor_pos.x); */
+  /* vertical_angle += mouse_speed * float(height/2 - cursor_pos.y); */
 
   //Direction
   glm::vec3 direction(
