@@ -12,7 +12,7 @@ void Cube::Init()
   std::vector<glm::vec3> temp_normals;
 
   //Load object
-  std::string obj_path = "C:/users/murra/Documents/projects/modern_opengl/assets/cube.obj";
+  std::string obj_path = "/home/rearden/Documents/projects/modern_opengl/assets/cube.obj";
   if(!LoadObj(obj_path.c_str(), temp_verts, temp_uvs, temp_normals)) 
     printf("Could not load cube.obj\n");
 
@@ -53,7 +53,7 @@ void Cube::Init()
 
   //Set up texture
   texture = new Texture();
-  texture->LoadBMP("C:/users/murra/Documents/projects/modern_opengl/assets/uvtemplate.bmp");
+  texture->LoadBMP("/home/rearden/Documents/projects/modern_opengl/assets/uvtemplate.bmp");
 }
 
 void Cube::Update()

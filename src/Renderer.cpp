@@ -89,8 +89,8 @@ bool Renderer::Initialize()
     glGetString(GL_SHADING_LANGUAGE_VERSION));
   PrintError(__LINE__, __FILE__);
 
-  std::string vert_shader_path = "C:/users/murra/Documents/projects/modern_opengl/shaders/SimpleVertexShader.vs";
-  std::string frag_shader_path = "C:/users/murra/Documents/projects/modern_opengl/shaders/SimpleFragmentShader.fs";
+  std::string vert_shader_path = "/home/rearden/Documents/projects/modern_opengl/shaders/SimpleVertexShader.vs";
+  std::string frag_shader_path = "/home/rearden/Documents/projects/modern_opengl/shaders/SimpleFragmentShader.fs";
   program_id = LoadShaders(vert_shader_path.c_str(), 
       frag_shader_path.c_str());;
 
@@ -154,7 +154,7 @@ bool Renderer::Initialize()
 	glDrawBuffers(1, draw_buffers);
 	PrintError(__LINE__, __FILE__);
 
-	std::string rtt_shader_path = "C:/users/murra/Documents/projects/modern_opengl/shaders/SimpleTextureShader.fs";
+	std::string rtt_shader_path = "/home/rearden/Documents/projects/modern_opengl/shaders/SimpleTextureShader.fs";
 	render_to_texture_program_id = LoadShaders(vert_shader_path.c_str(), rtt_shader_path.c_str());
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
