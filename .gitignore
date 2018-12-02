@@ -1,3 +1,5 @@
+/env
 /build
+/docs/_build
 *.pyc
 *.swp
